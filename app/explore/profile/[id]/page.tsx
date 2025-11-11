@@ -5,12 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Star, ArrowLeft, Mail, MessageSquare, Calendar, Share2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import { users } from "../../../data/lib";
+import { profiles } from "../../../data/lib";
 
 export default function ProfilePage() {
   const { id } = useParams();
 
-  const user = users.find((u) => u.id === Number(id));
+  const user = profiles.find((u) => u.id === (id));
 
   if (!user) {
     return (
@@ -44,13 +44,12 @@ export default function ProfilePage() {
         <div className="col-span-1">
           <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden shadow-md border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900">
             {/* ensure parent is positioned for Image fill */}
-            <Image
-              src={user.profile}
+            <img
+              src={user.profile_image}
               alt={`${user.name} profile`}
-              fill
-              className="object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
+              loading="eager"
               sizes="(max-width: 768px) 100vw, 300px"
-              priority={user.id <= 4}
             />
           </div>
 
@@ -63,12 +62,12 @@ export default function ProfilePage() {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${i < Math.round(user.rating) ? "text-yellow-400" : "text-zinc-300"}`}
-                      fill={i < Math.round(user.rating) ? "#facc15" : "none"}
+                      className={`w-4 h-4 ${i < Math.round(user.average_rating) ? "text-yellow-400" : "text-zinc-300"}`}
+                      fill={i < Math.round(user.average_rating) ? "#facc15" : "none"}
                     />
                   ))}
                   <span className="text-sm text-zinc-600 dark:text-zinc-400 ml-2">
-                    {user.rating} ({user.reviews})
+                    {user.average_rating} ({user.total_reviews})
                   </span>
                 </div>
               </div>

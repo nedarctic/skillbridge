@@ -1,4 +1,82 @@
-import type { user } from "./types";
+import type { Profile, user } from "./types";
+
+export const login = async (email: string, password: string) => {
+  const tokenResponse = await fetch("http://127.0.0.1:8000/api/v1/dj-rest-auth/login/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+    cache: "no-store",
+  });
+
+  if (!tokenResponse.ok) {
+    console.error("Login failed:", await tokenResponse.text());
+    return null;
+  }
+
+  return tokenResponse.json();
+};
+
+export const getProfiles = async (token: string) => {
+  const res = await fetch("http://127.0.0.1:8000/api/v1/profiles/", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    console.error("Profile fetch failed:", await res.text());
+    return [];
+  }
+
+  const data = await res.json();
+  return data.results || data;
+};
+
+export const getRatings = (token: string) => {
+  const res = fetch("http://127.0.0.1:8000/api/v1/ratings/", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    cache: "no-store",
+  });
+}
+
+
+export const getReviews = (token: string) => {
+  const res = fetch("http://127.0.0.1:8000/api/v1/reviews/", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    cache: "no-store",
+  });
+}
+
+// sample login for a profiles fetch
+const tokenData = await login("lilianwambui@example.com", "StrongPass123!");
+if (!tokenData?.key) {
+  console.error("Failed to log in.");
+}
+
+// fetching profiles using token
+export const profiles: Profile[] = await getProfiles(tokenData.key);
+if (profiles.length === 0) {
+  console.error("No profiles found or failed to fetch profiles.");
+}
+
+
+// export const fetchProfiles = async (): Promise<user[]> => {
+//   const profiles = await getProfiles();
+//   return profiles;
+// }
 
 export const users: user[] = [
   {

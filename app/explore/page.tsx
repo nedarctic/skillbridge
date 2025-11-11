@@ -7,11 +7,14 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { users } from "../data/lib";
+import { profiles } from "../data/lib";
 
 export default function Explore() {
+  
+
   const [query, setQuery] = useState("");
 
-  const filteredUsers = users.filter((u) =>
+  const filteredUsers = profiles.filter((u) =>
     Object.values(u)
       .join(" ")
       .toLowerCase()
@@ -68,12 +71,11 @@ export default function Explore() {
             >
               {/* Profile Image */}
               <div className="relative w-full h-48 z-0">
-                <Image
-                  src={user.profile}
+                <img
+                  src={user.profile_image.replace('127.0.0.1', 'localhost')}
                   alt={user.name}
-                  fill
-                  className="object-cover"
-                  priority={user.id <= 4}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="eager"
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
@@ -91,15 +93,15 @@ export default function Explore() {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${i < Math.round(user.rating)
+                      className={`w-4 h-4 ${i < Math.round(user.average_rating)
                           ? "text-yellow-400"
                           : "text-zinc-400"
                         }`}
-                      fill={i < Math.round(user.rating) ? "#facc15" : "none"}
+                      fill={i < Math.round(user.average_rating) ? "#facc15" : "none"}
                     />
                   ))}
                   <span className="text-sm text-zinc-600 dark:text-zinc-400 ml-2">
-                    {user.rating} ({user.reviews})
+                    {user.average_rating} ({user.total_reviews})
                   </span>
                 </div>
 
