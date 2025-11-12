@@ -67,6 +67,32 @@ export const resetPassword = async (email: string) => {
   return res;
 };
 
+export const confirmResetPassword = async (
+  uid: string,
+  token: string,
+  new_password1: string,
+  new_password2: string
+) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/dj-rest-auth/password/reset/confirm/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid, token, new_password1, new_password2 }),
+    cache: "no-store",
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    console.error("Password reset confirmation failed:", data);
+    throw data;
+  }
+
+  return data;
+};
+
+
+
+
 export const getProfiles = async (token: string) => {
   const res = await fetch("http://127.0.0.1:8000/api/v1/profiles/", {
     method: "GET",
