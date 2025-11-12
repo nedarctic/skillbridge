@@ -1,7 +1,38 @@
+import { error } from "console";
 import type { Profile, user } from "./types";
 
+export const register = async (
+  email: string,
+  password1: string,
+  password2: string,
+  first_name: string,
+  last_name: string
+) => {
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/v1/dj-rest-auth/registration/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password1, password2, first_name, last_name }),
+      cache: "no-store",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // dj-rest-auth sends field-specific errors like { email: ["A user with that email already exists."] }
+      throw data;
+    }
+
+    return { success: true, data };
+  } catch (error: any) {
+    console.error("Registration error:", error);
+    return { success: false, error };
+  }
+};
+
+
 export const login = async (email: string, password: string) => {
-  const tokenResponse = await fetch("http://127.0.0.1:8000/api/v1/dj-rest-auth/login/", {
+  const tokenResponse = await fetch("http://127.0.0.1:8000/api/v1/token/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -18,11 +49,30 @@ export const login = async (email: string, password: string) => {
   return tokenResponse.json();
 };
 
-export const getProfiles = async () => {
+export const resetPassword = async (email: string) => {
+  const res = await fetch("http://127.0.0.1:8000/api/v1/dj-rest-auth/password/reset/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    console.error("Password reset failed:", await res.text());
+    return null;
+  }
+
+  return res;
+};
+
+export const getProfiles = async (token: string) => {
   const res = await fetch("http://127.0.0.1:8000/api/v1/profiles/", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     cache: "no-store",
   });
@@ -59,16 +109,15 @@ export const getReviews = () => {
 
 // sample login for a profiles fetch
 const tokenData = await login("lilianwambui@example.com", "StrongPass123!");
-if (!tokenData?.key) {
+if (!tokenData?.access) {
   console.error("Failed to log in.");
 }
 
 // fetching profiles using token
-export const profiles: Profile[] = await getProfiles();
+export const profiles: Profile[] = await getProfiles(tokenData.access);
 if (profiles.length === 0) {
   console.error("No profiles found or failed to fetch profiles.");
 }
-
 
 // export const fetchProfiles = async (): Promise<user[]> => {
 //   const profiles = await getProfiles();
