@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { motion, AnimatePresence } from "framer-motion";
 import { register } from "../data/lib";
 import { useRouter } from "next/navigation";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import axios from 'axios';
+
+declare const google: any;
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -55,6 +58,47 @@ export default function Signup() {
     // ✅ Show success modal
     setModal({ type: "success", message: "Account created successfully!" });
   };
+
+  const tokenClientRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (typeof google === 'undefined') return;
+
+    tokenClientRef.current = google.accounts.oauth2.initTokenClient({
+      client_id: '886632894445-limlfralb9vsie6m2893hg46trrcc0i2.apps.googleusercontent.com',
+      scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid',
+      callback: async (tokenResponse: any) => {
+        if (tokenResponse && tokenResponse.access_token) {
+          try {
+            const res = await axios.post('http://127.0.0.1:8000/api/v1/google/', {
+              access_token: tokenResponse.access_token,
+            });
+
+            const { access, refresh, user } = res.data;
+
+            // Store tokens (example uses localStorage – use httpOnly cookies in production)
+            localStorage.setItem('access_token', access);
+            localStorage.setItem('refresh_token', refresh);
+
+            console.log('Logged in successfully!', user);
+            // Redirect or update auth context
+            window.location.href = '/dashboard';
+          } catch (err: any) {
+            console.error('Login failed', err.response?.data || err);
+          }
+        }
+      },
+      error_callback: (error: any) => {
+        console.error('Google error:', error);
+      },
+    });
+  }, []);
+
+  const handleGoogleSignIn = useCallback(() => {
+    if (tokenClientRef.current) {
+      tokenClientRef.current.requestAccessToken({ prompt: 'consent' });
+    }
+  }, []);
 
   return (
     <main className="flex min-h-screen w-full bg-zinc-50 dark:bg-black relative overflow-hidden">
@@ -147,14 +191,19 @@ export default function Signup() {
             </p>
           </motion.div>
 
-          <button
-            type="button"
-            onClick={() => console.log("Google signup")}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-full text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <FcGoogle className="text-xl" />
-            <span>Sign up with Google</span>
-          </button>
+            <button
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-full text-black dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+              onClick={handleGoogleSignIn}
+            >
+              <FcGoogle className="text-xl" />
+              <span>Sign in with Google</span>
+            </button>
+          </motion.div>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">

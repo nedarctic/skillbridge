@@ -5,8 +5,6 @@ import { motion } from "framer-motion";
 import { Star, Search } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-
-import { users } from "../data/lib";
 import { profiles } from "../data/lib";
 
 export default function Explore() {
