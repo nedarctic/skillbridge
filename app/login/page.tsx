@@ -4,12 +4,14 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
-import { login } from "../data/lib";
+import { login } from "../actions/auth";
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 declare const google: any;
 
 export default function Login() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,25 +33,9 @@ export default function Login() {
       setLoading(false);
       return;
     }
-
-    // JWT SimpleJWT returns: { access: "...", refresh: "..." }
-    const { access, refresh } = res;
-
-    try {
-      if (formData.remember) {
-        localStorage.setItem("access", access);
-        localStorage.setItem("refresh", refresh);
-      } else {
-        sessionStorage.setItem("access", access);
-        sessionStorage.setItem("refresh", refresh);
-      }
-
-      // You can redirect user now (e.g., to dashboard)
-      window.location.href = "/";
-    } catch (err) {
-      console.error("Storage error:", err);
-      setError("Unexpected error while saving session.");
-    }
+    
+    router.push("/");
+    router.refresh();
 
     setLoading(false);
   };
