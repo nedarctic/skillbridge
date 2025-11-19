@@ -9,7 +9,6 @@ import { profiles } from "../data/lib";
 
 export default function Explore() {
   
-
   const [query, setQuery] = useState("");
 
   const filteredUsers = profiles.filter((u) =>
@@ -70,7 +69,7 @@ export default function Explore() {
               {/* Profile Image */}
               <div className="relative w-full h-48 z-0">
                 <img
-                  src={user.profile_image.replace('127.0.0.1', 'localhost')}
+                  src={user.profile_image}
                   alt={user.name}
                   className="absolute inset-0 w-full h-full object-cover"
                   loading="eager"

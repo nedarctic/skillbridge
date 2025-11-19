@@ -93,12 +93,12 @@ export const confirmResetPassword = async (
 
 
 
-export const getProfiles = async (token: string) => {
+export const getProfiles = async () => {
   const res = await fetch("http://127.0.0.1:8000/api/v1/profiles/", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      // Authorization: `Bearer ${token}`,
     },
     cache: "no-store",
   });
@@ -133,22 +133,7 @@ export const getReviews = () => {
   });
 }
 
-// sample login for a profiles fetch
-const tokenData = await login("lilianwambui@example.com", "StrongPass123!");
-if (!tokenData?.access) {
-  console.error("Failed to log in.");
-}
-
-// fetching profiles using token
-export const profiles: Profile[] = await getProfiles(tokenData.access);
-if (profiles.length === 0) {
-  console.error("No profiles found or failed to fetch profiles.");
-}
-
-// export const fetchProfiles = async (): Promise<user[]> => {
-//   const profiles = await getProfiles();
-//   return profiles;
-// }
+export const profiles: Profile[] = await getProfiles();
 
 // export const users: user[] = [
 //   {
