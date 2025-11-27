@@ -65,7 +65,7 @@ export default function Signup() {
     if (typeof google === 'undefined') return;
 
     tokenClientRef.current = google.accounts.oauth2.initTokenClient({
-      client_id: '886632894445-limlfralb9vsie6m2893hg46trrcc0i2.apps.googleusercontent.com',
+      client_id: '886632894445-uokecs1dl2a9ca8mjrh5q1qa8na8jp7m.apps.googleusercontent.com',
       scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid',
       callback: async (tokenResponse: any) => {
         if (tokenResponse && tokenResponse.access_token) {
