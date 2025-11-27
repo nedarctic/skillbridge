@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 import { Star, Search } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
-import { profiles } from "../data/lib";
+import { users } from "../data/lib";
 
 export default function Explore() {
   
   const [query, setQuery] = useState("");
 
-  const filteredUsers = profiles.filter((u) =>
+  const filteredUsers = users.filter((u) =>
     Object.values(u)
       .join(" ")
       .toLowerCase()
@@ -69,7 +69,7 @@ export default function Explore() {
               {/* Profile Image */}
               <div className="relative w-full h-48 z-0">
                 <img
-                  src={user.profile_image}
+                  src={user.profile}
                   alt={user.name}
                   className="absolute inset-0 w-full h-full object-cover"
                   loading="eager"
@@ -90,15 +90,15 @@ export default function Explore() {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${i < Math.round(user.average_rating)
+                      className={`w-4 h-4 ${i < Math.round(user.rating)
                           ? "text-yellow-400"
                           : "text-zinc-400"
                         }`}
-                      fill={i < Math.round(user.average_rating) ? "#facc15" : "none"}
+                      fill={i < Math.round(user.rating) ? "#facc15" : "none"}
                     />
                   ))}
                   <span className="text-sm text-zinc-600 dark:text-zinc-400 ml-2">
-                    {user.average_rating} ({user.total_reviews})
+                    {user.rating} ({user.reviews})
                   </span>
                 </div>
 
